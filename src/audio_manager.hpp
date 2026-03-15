@@ -1,0 +1,40 @@
+#pragma once
+
+#include <string>
+
+#include "../lib/miniaudio.h"
+
+class AudioManager
+{
+public:
+
+	explicit				AudioManager(const std::string& filename);
+
+							~AudioManager();
+
+	void					Start();
+
+	void					Stop();
+
+	void					SetTime(unsigned int ms);
+
+private:
+
+	struct					DurationData
+	{
+		bool				isPlaying;
+		unsigned int		frames;
+		unsigned int		sampleRate;
+		unsigned int		duration_ms;
+		unsigned int		progress_ms;
+	};
+
+	static void				data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
+
+	ma_result				m_result;
+	DurationData			m_duration;
+	ma_decoder				m_decoder;
+	ma_device_config		m_deviceConfig;
+	ma_device				m_device;
+
+};
