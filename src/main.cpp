@@ -4,6 +4,8 @@
 #include <thread>
 
 #include "audio_manager.hpp"
+#include "lyric_controller.hpp"
+#include "colour.hpp"
 
 int main()
 {

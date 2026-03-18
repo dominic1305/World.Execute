@@ -24,12 +24,24 @@
     <ClCompile Include="lib\miniaudio.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\lyric_controller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\colour.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\audio_manager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="lib\miniaudio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lyric_controller.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\colour.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
