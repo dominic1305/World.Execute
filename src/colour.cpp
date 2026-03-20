@@ -1,13 +1,5 @@
 #include "colour.hpp"
 
-Colour::Colour(ColourCode fg, ColourCode bg, bool dark, bool underline)
-	: m_fg(fg)
-	, m_bg(bg)
-	, m_dark(dark)
-	, m_underline(underline)
-{
-}
-
 std::string Colour::operator()() const
 {
 	return std::to_string((int)m_fg) +		// Foreground colour

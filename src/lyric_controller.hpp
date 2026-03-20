@@ -26,7 +26,7 @@ public:
 
 	static void				SimLoading(const std::string& str, unsigned int delay_ms, unsigned int barLength, Renderer renderer = {});
 
-//private:
+private:
 
 	static std::string		ShuffleWord(const std::string& str);
 

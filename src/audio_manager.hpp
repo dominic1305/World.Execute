@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <atomic>
 
 #include "../lib/miniaudio.h"
 
@@ -26,7 +27,7 @@ private:
 		unsigned int		frames;
 		unsigned int		sampleRate;
 		unsigned int		duration_ms;
-		unsigned int		progress_ms;
+		std::atomic_uint	progress_ms;
 	};
 
 	static void				data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);

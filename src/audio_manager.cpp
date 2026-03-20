@@ -18,18 +18,16 @@ AudioManager::AudioManager(const std::string& filename)
 
     double duration = (double)frameCount / (double)sampleRate;
 
-    m_duration = {
-        false,
-        static_cast<unsigned int>(frameCount),
-        static_cast<unsigned int>(sampleRate),
-        static_cast<unsigned int>(duration * 1000.0 + 1), // Round up to the nearest millisecond
-        0
-    };
+	m_duration.isPlaying = false;
+	m_duration.frames = static_cast<unsigned int>(frameCount);
+	m_duration.sampleRate = static_cast<unsigned int>(sampleRate);
+	m_duration.duration_ms = static_cast<unsigned int>(duration * 1000.0 + 1); // Round up to the nearest millisecond
+	m_duration.progress_ms.store(0);
 
     m_deviceConfig = ma_device_config_init(ma_device_type_playback);
     m_deviceConfig.playback.format = m_decoder.outputFormat;
     m_deviceConfig.playback.channels = m_decoder.outputChannels;
-    m_deviceConfig.sampleRate = sampleRate;
+    m_deviceConfig.sampleRate = static_cast<unsigned int>(sampleRate);
     m_deviceConfig.dataCallback = data_callback;
     m_deviceConfig.pUserData = &m_decoder;
 

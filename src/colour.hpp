@@ -25,12 +25,11 @@ enum class ColourCode : char	// ANSI escape codes
 
 struct Colour
 {
-	ColourCode				m_fg;
-	ColourCode				m_bg;
-	bool					m_dark;
-	bool					m_underline;
+	ColourCode		m_fg		= ColourCode::Default_fg;
+	ColourCode		m_bg		= ColourCode::Default_bg;
+	bool			m_dark		= false;
+	bool			m_underline	= false;
 	
-	Colour(ColourCode fg = ColourCode::Default_fg, ColourCode bg = ColourCode::Default_bg, bool dark = false, bool underline = false);
 
-	std::string	operator()() const;
+	std::string		operator()() const;
 };

@@ -6,7 +6,6 @@
 #include "lyric_controller.hpp"
 
 #pragma region Static_Functions
-
 static void seed_rand()
 {
 	static std::time_t rand_seed = std::time(nullptr);	
