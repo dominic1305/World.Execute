@@ -18,7 +18,7 @@ public:
 
 	void					SetTime(uint64_t ms);
 
-	void					HangThread() const;
+	void					HangThread();
 
 private:
 
@@ -27,6 +27,7 @@ private:
 		unsigned int		frames;
 		unsigned int		sampleRate;
 		unsigned int		duration_ms;
+		unsigned int		position_ms;
 	};
 
 	ma_engine				m_engine;

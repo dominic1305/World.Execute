@@ -30,7 +30,8 @@ AudioManager::AudioManager(const std::string& filename)
 
 	m_duration.sampleRate = sampleRate;
 	m_duration.frames = static_cast<unsigned int>(frameCount);
-	m_duration.duration_ms = static_cast<unsigned int>(duration * 1000.0 + 1.0); // Round up to the nearest millisecond 
+	m_duration.duration_ms = static_cast<unsigned int>(duration * 1000.0 + 1.0); // Round up to the nearest millisecond
+	m_duration.position_ms = 0;
 }
 
 AudioManager::~AudioManager()
@@ -70,12 +71,14 @@ void AudioManager::SetTime(uint64_t ms)
 	}
 }
 
-void AudioManager::HangThread() const
+void AudioManager::HangThread()
 {
 	while (ma_sound_is_playing(&m_sound))
 	{
 		ma_uint64 cursor;
 		ma_sound_get_cursor_in_pcm_frames(&m_sound, &cursor);
+
+		m_duration.position_ms = (1000ULL * cursor) / static_cast<uint64_t>(m_duration.sampleRate);
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
