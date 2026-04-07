@@ -23,7 +23,7 @@ private:
 
 	struct					DurationData
 	{
-		bool				isPlaying;
+		std::atomic_bool	isPlaying;
 		unsigned int		frames;
 		unsigned int		sampleRate;
 		unsigned int		duration_ms;

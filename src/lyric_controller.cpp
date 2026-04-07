@@ -50,6 +50,10 @@ std::string Renderer::operator()(const std::string& str)
 	return "\x1b[" + colour() + "m" + str + "\x1b[0m";
 }
 
+const Renderer RENDER_GREEN = { ColourCode::Green_fg };
+
+const Renderer RENDER_HIGHLIGHT = { { .m_fg = ColourCode::Yellow_fg, .m_dark = true, .m_underline = true } };
+
 void Lyrics::ClearTerminal()
 {
 #if defined(_WIN32) || defined(_WIN64)
@@ -118,7 +122,7 @@ void Lyrics::AnimatePrint(const std::string& actor, const std::string& str, unsi
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	}
 
-	std::cout << strRenderer(str) << "" << actorRenderer(actor) << std::flush;
+	std::cout << strRenderer(str) << "" << actorRenderer(actor) << std::endl;
 }
 
 void Lyrics::SimLoading(const std::string& str, unsigned int delay_ms, unsigned int barLength, Renderer renderer)
@@ -126,9 +130,11 @@ void Lyrics::SimLoading(const std::string& str, unsigned int delay_ms, unsigned 
 	for (unsigned int i = 0U; i <= barLength; i++)
 	{
 		std::string bar = "[" + std::string(i, '#') + std::string(barLength - i, '-') + "]";
-		std::cout << '\r' << renderer(bar + " " + std::to_string(i * 100 / barLength) + "%") << std::flush;
+		std::cout << '\r' << renderer(bar + " " + std::to_string(i * 100 / barLength) + "% ") << std::flush;
 		std::this_thread::sleep_for(std::chrono::milliseconds(delay_ms));
 	}
+
+	std::cout << renderer(str) << std::endl;
 }
 
 std::string Lyrics::ShuffleWord(const std::string& str)
@@ -151,7 +157,6 @@ void Lyrics::SimWorld(Renderer renderer)
 	constexpr int TOTAL_BARS = 69;
 	constexpr int DELAY_MS = 187;
 	constexpr int PHRASE_COUNT = 4;
-
 	std::string phrases[PHRASE_COUNT] = { "Adding. 'You' and 'Me'.", "Generating the Universe", "Adding Star and Moons..", "Crafting the Narrative." };
 
 	seed_rand();
@@ -197,20 +202,18 @@ void Lyrics::SimWorld2(Renderer renderer)
 	std::cout << std::endl;
 }
 
-void Lyrics::EncryptWall(unsigned int loops, const std::vector<std::string>& bank)
+void Lyrics::ScrambleTextWall(unsigned int loops, unsigned int duration_ms, std::initializer_list<const char*> bank)
 {
-	int sleepAmount = static_cast<int>(std::ceil(100.0 / loops));
+	unsigned int sleepAmount = static_cast<unsigned int>(std::round(duration_ms / loops / bank.size()));
 
 	for (unsigned int i = 0U; i < loops; ++i)
 	{
-		int count = 0;
-
-		for (int i = 0; i < bank.size(); ++i)
+		for (int ii = 0; ii < bank.size(); ++ii)
 		{
-			std::cout << bank[count++] << '\r' << std::flush;
+			std::cout << *(bank.begin() + ii) << '\r' << std::flush;
 			std::this_thread::sleep_for(std::chrono::milliseconds(sleepAmount));
 		}
-
+		
 		std::cout << std::endl;
 	}
 }
@@ -219,11 +222,11 @@ std::string Lyrics::GetBlocks(unsigned int width, Renderer renderer)
 {
 	if (renderer.colour.m_fg == ColourCode::Default_fg)
 	{
-		renderer = { Colour(ColourCode::Default_fg, ColourCode::White_bg) };
+		renderer.colour.m_bg = ColourCode::Default_bg;
 	}
 	else
 	{
-		renderer = { Colour(ColourCode::Default_fg, static_cast<ColourCode>((int)renderer.colour.m_fg + 10)) };
+		renderer.colour.m_bg = static_cast<ColourCode>(static_cast<char>(renderer.colour.m_fg) + 10);
 	}
 
 	return renderer(std::string(width, ' '));
