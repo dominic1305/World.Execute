@@ -8,7 +8,7 @@ class AudioManager
 {
 public:
 
-	explicit				AudioManager(const std::string& filename);
+	explicit				AudioManager(const std::string& filename, float volume = 1.0f);
 
 							~AudioManager();
 
@@ -17,6 +17,12 @@ public:
 	void					Stop();
 
 	void					SetTime(uint64_t ms);
+
+	unsigned int			GetTime() const;
+
+	void					SetVolume(float volume);
+
+	float					GetVolume() const;
 
 	void					HangThread();
 

@@ -3,7 +3,7 @@
 
 #include "audio_manager.hpp"
 
-AudioManager::AudioManager(const std::string& filename)
+AudioManager::AudioManager(const std::string& filename, float volume)
 {
 	if (ma_engine_init(NULL, &m_engine) != MA_SUCCESS)
 	{
@@ -15,6 +15,8 @@ AudioManager::AudioManager(const std::string& filename)
 		ma_engine_uninit(&m_engine);
 		throw std::runtime_error("failed to load audio file");
 	}
+
+	ma_sound_set_volume(&m_sound, volume);
 
 	ma_uint64 frameCount;
 	if (ma_sound_get_length_in_pcm_frames(&m_sound, &frameCount) != MA_SUCCESS)
@@ -69,6 +71,21 @@ void AudioManager::SetTime(uint64_t ms)
 	{
 		throw std::runtime_error("Failed to seek");
 	}
+}
+
+unsigned int AudioManager::GetTime() const
+{
+	return m_duration.duration_ms;
+}
+
+void AudioManager::SetVolume(float volume)
+{
+	ma_sound_set_volume(&m_sound, volume);
+}
+
+float AudioManager::GetVolume() const
+{
+	return ma_sound_get_volume(&m_sound);
 }
 
 void AudioManager::HangThread()
