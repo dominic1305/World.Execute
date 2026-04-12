@@ -5,15 +5,17 @@
 
 AudioManager::AudioManager(const std::string& filename, float volume)
 {
+	if (volume < 0.0f || volume > 1.0f) throw std::exception("Invalid volume");
+
 	if (ma_engine_init(NULL, &m_engine) != MA_SUCCESS)
 	{
-		throw std::runtime_error("Failed to initialise audio engine.");
+		throw std::runtime_error("Failed to initialise audio engine");
 	}
 
 	if (ma_sound_init_from_file(&m_engine, filename.c_str(), 0, NULL, NULL, &m_sound) != MA_SUCCESS)
 	{
 		ma_engine_uninit(&m_engine);
-		throw std::runtime_error("failed to load audio file");
+		throw std::runtime_error("Failed to load audio file");
 	}
 
 	ma_sound_set_volume(&m_sound, volume);
@@ -66,6 +68,7 @@ void AudioManager::SetTime(uint64_t ms)
 	}
 
 	uint64_t targetFrame = (ms * static_cast<ma_uint64>(m_duration.sampleRate)) / 1000ULL;
+	m_duration.position_ms = static_cast<uint32_t>(ms);
 
 	if (ma_sound_seek_to_pcm_frame(&m_sound, targetFrame) != MA_SUCCESS)
 	{
@@ -75,11 +78,13 @@ void AudioManager::SetTime(uint64_t ms)
 
 unsigned int AudioManager::GetTime() const
 {
-	return m_duration.duration_ms;
+	return m_duration.position_ms;
 }
 
 void AudioManager::SetVolume(float volume)
 {
+	if (volume < 0.0f || volume > 1.0f) throw std::exception("Invalid volume");
+
 	ma_sound_set_volume(&m_sound, volume);
 }
 
@@ -90,12 +95,12 @@ float AudioManager::GetVolume() const
 
 void AudioManager::HangThread()
 {
-	while (ma_sound_is_playing(&m_sound))
+	while (!ma_sound_at_end(&m_sound))
 	{
 		ma_uint64 cursor;
 		ma_sound_get_cursor_in_pcm_frames(&m_sound, &cursor);
 
-		m_duration.position_ms = (1000ULL * cursor) / static_cast<uint64_t>(m_duration.sampleRate);
+		m_duration.position_ms = static_cast<uint32_t>((1000ULL * cursor) / static_cast<uint64_t>(m_duration.sampleRate));
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
