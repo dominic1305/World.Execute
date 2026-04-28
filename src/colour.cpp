@@ -1,12 +1,39 @@
 #include "colour.hpp"
 
+_hex& _hex::operator=(const _hex& other)
+{
+	if (this != &other)
+	{
+		hex = other.hex;
+	}
+
+	return *this;
+}
+
+rgb& rgb::operator=(const rgb& other)
+{
+	if (this != &other)
+	{
+		hex = other.hex;
+	}
+
+	return *this;
+}
+
 std::string Colour::operator()() const
 {
-	return std::to_string((int)m_fg) +		// Foreground colour
-		";" +
-		std::to_string((int)m_bg) +			// Background colour
-		";" +
-		(char)(49 + m_dark) +				// Dark? (49 "1" = normal, 50 "2" = dark)
-		";" +
-		(char)(m_underline * 3 + 49);		// Underline? (49 "1" = no underline, 52 "4" = underline)
+	return std::string((underline) ? "4;" : "")
+		+ "38;2;"
+		+ std::to_string((int)fg.red)
+		+ ";"
+		+ std::to_string((int)fg.green)
+		+ ";"
+		+ std::to_string((int)fg.blue)
+		+ ";"
+		+ "48;2;"
+		+ std::to_string((int)bg.red)
+		+ ";"
+		+ std::to_string((int)bg.green)
+		+ ";"
+		+ std::to_string((int)bg.blue);
 }
