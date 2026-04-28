@@ -24,7 +24,7 @@ static inline void log_asset(const std::string& filename)
 
 static void save_used_files()
 {
-	std::cout << Renderer{ ColourCode::Cyan_fg }("\nSaving used assets...");
+	std::cout << Renderer{ Colours::Cyan_LT }("\nSaving used assets...");
 
 	std::ofstream log_used("printed_files.log", std::ios::trunc);
 	if (log_used.is_open())
@@ -61,7 +61,7 @@ static void save_used_files()
 		}
 	}
 
-	std::cout << Renderer{ ColourCode::Cyan_fg }("\rUsed assets saved to \"used_files.log\"");
+	std::cout << Renderer{ Colours::Cyan_LT }("\rUsed assets saved to \"used_files.log\"");
 }
 
 static std::unordered_map<SongSection, unsigned int> song_positions{};
@@ -118,7 +118,7 @@ static bool load_song_positions()
 
 static void save_song_positions()
 {
-	std::cout << Renderer{ ColourCode::Cyan_fg }("\nSaving song positions...");
+	std::cout << Renderer{ Colours::Cyan_LT }("\nSaving song positions...");
 
 	std::ofstream file("timestamps.log", std::ios::trunc);
 
@@ -132,7 +132,7 @@ static void save_song_positions()
 		file.close();
 	}
 
-	std::cout << Renderer{ ColourCode::Cyan_fg }("\rSong positions saved to \"timestamps.log\"");
+	std::cout << Renderer{ Colours::Cyan_LT }("\rSong positions saved to \"timestamps.log\"");
 }
 #endif
 
@@ -180,9 +180,9 @@ std::string Renderer::operator()(const std::string& str) const
 	return "\x1b[" + colour() + "m" + str + "\x1b[0m";
 }
 
-const Renderer RENDER_GREEN = { ColourCode::Green_fg };
-const Renderer RENDER_RED = { ColourCode::Red_fg };
-const Renderer RENDER_HIGHLIGHT = { { .m_fg = ColourCode::Yellow_fg, .m_dark = true, .m_underline = true } };
+const Renderer RENDER_GREEN = { Colours::Green_LT };
+const Renderer RENDER_RED = { Colours::Red_LT };
+const Renderer RENDER_HIGHLIGHT = { { .fg = Colours::Yellow_DK, .underline = true } };
 
 void Lyrics::ClearTerminal()
 {
@@ -342,18 +342,19 @@ void Lyrics::ScrambleTextWall(unsigned int loops, unsigned int duration_ms, std:
 		}
 		
 		std::cout << std::endl;
+		atLineStart = true;
 	}
 }
 
 std::string Lyrics::GetBlocks(unsigned int width, Renderer renderer)
 {
-	if (renderer.colour.m_fg == ColourCode::Default_fg)
+	if (renderer.colour.fg == Colours::White_LT)
 	{
-		renderer.colour.m_bg = ColourCode::White_bg;
+		renderer.colour.bg = Colours::White_LT;
 	}
 	else
 	{
-		renderer.colour.m_bg = static_cast<ColourCode>(static_cast<char>(renderer.colour.m_fg) + 10);
+		renderer.colour.bg = renderer.colour.fg;
 	}
 
 	return renderer(std::string(width, ' '));
@@ -425,11 +426,11 @@ void Lyrics::Execute(AudioManager* audio)
 	PrintFromFile("assets/logoRhine.txt");
 	SlowPrint("Remember to put on -- P R O T E C T I O N", 50, 3, RENDER_GREEN);
 
-	std::cout << Renderer{ ColourCode::Yellow_fg }(">EncryptEnigma();\n");
+	std::cout << Renderer{ Colours::Yellow_LT }(">EncryptEnigma();\n");
 	SimLoading("Encryption Set\n", 20, 10);
 
 	SlowPrint("Lay down you pieces and let's begin ", 50, 0, RENDER_GREEN);
-	SlowPrint("ObjectCreation();", 50, 1, { ColourCode::Yellow_fg });
+	SlowPrint("ObjectCreation();", 50, 1, { Colours::Yellow_LT });
 
 	AnimatePrint("[Console] Fill in my data.", "", 5, RENDER_GREEN);
 	PrintFromFile("assets/createObject.txt");
@@ -444,18 +445,18 @@ void Lyrics::Execute(AudioManager* audio)
 		});
 	SlowPrint("Initialisation.", 60, 1, RENDER_GREEN);
 	PrintFromFile("assets/getError.txt", RENDER_RED);
-	AnimatePrint("world.toggleValidity(false)", "", 3, { ColourCode::Yellow_fg });
-	AnimatePrint("world.toggleTelementary(false)", "", 3, { ColourCode::Yellow_fg });
+	AnimatePrint("world.toggleValidity(false)", "", 3, { Colours::Yellow_LT });
+	AnimatePrint("world.toggleTelementary(false)", "", 3, { Colours::Yellow_LT });
 	SimLoading("Apply World Settings", 10, 10);
 
 	SlowPrint("Setup our new world", 40, 1, RENDER_GREEN);
-	AnimatePrint("World world = new World(5);", "", 1, { ColourCode::Yellow_fg });
-	AnimatePrint("world.addThing(me);", "", 1, { ColourCode::Yellow_fg });
-	AnimatePrint("world.addThing(you);", "", 1, { ColourCode::Yellow_fg });
+	AnimatePrint("World world = new World(5);", "", 1, { Colours::Yellow_LT });
+	AnimatePrint("world.addThing(me);", "", 1, { Colours::Yellow_LT });
+	AnimatePrint("world.addThing(you);", "", 1, { Colours::Yellow_LT });
 	SlowPrint("Let's begin...", 30, 1, RENDER_GREEN);
 	SlowPrint("T H E  S I M U L A T I O N   ", 45, 1, RENDER_GREEN);
 	ClearTerminal();
-	AnimatePrint("world.ActivateSimulation();", "", 5, { ColourCode::Yellow_fg });
+	AnimatePrint("world.ActivateSimulation();", "", 5, { Colours::Yellow_LT });
 	SimWorld();
 	PrintFromFile("assets/getServer.txt");
 	std::this_thread::sleep_for(std::chrono::milliseconds(180));
@@ -513,14 +514,14 @@ void Lyrics::Execute(AudioManager* audio)
 
 	SlowPrint("And then blind my Vision", 70, 1, RENDER_GREEN);
 	SlowPrint("So dizzy,", 120, 1, RENDER_GREEN);
-	AnimatePrint("WARNING: Setting me.toggleVision() OFF will -----", "", 5, { ColourCode::Yellow_fg });
-	AnimatePrint("WARNING: Setting me.toggleVision() OFF will -----", "", 5, { ColourCode::Yellow_fg });
+	AnimatePrint("WARNING: Setting me.toggleVision() OFF will -----", "", 5, { Colours::Yellow_LT });
+	AnimatePrint("WARNING: Setting me.toggleVision() OFF will -----", "", 5, { Colours::Yellow_LT });
 	SlowPrint("So dizzy,", 120, 1, RENDER_GREEN);
-	AnimatePrint("world.disableWarnings()", "", 5, { ColourCode::Yellow_fg });
+	AnimatePrint("world.disableWarnings()", "", 5, { Colours::Yellow_LT });
 
 	SlowPrint("Oh, we can travel to ... ", 80, 1, RENDER_GREEN);
 	SlowPrint("AD to BC", 120, 1, RENDER_GREEN);
-	AnimatePrint("Year 2332 BC", "[World] Setting Date to: ", 5, { ColourCode::Yellow_fg });
+	AnimatePrint("Year 2332 BC", "[World] Setting Date to: ", 5);
 	ScrambleTextWall(1, 300, {
 		std::string(std::string("[World] Setting Locations:") + GetBlocks(12)).c_str(),
 		std::string(std::string("[World]: Setting Locations: BABY") + GetBlocks(12)).c_str(),
@@ -530,9 +531,9 @@ void Lyrics::Execute(AudioManager* audio)
 	SlowPrint("And we can unite", 70, 1, RENDER_GREEN);
 	PrintFromFile("assets/getDeeply.txt");
 	SlowPrint("So deeply, ", 80, 1, RENDER_GREEN);
-	AnimatePrint("me.addLover(\"you\")", "", 3, { ColourCode::Yellow_fg });
+	AnimatePrint("me.addLover(\"you\")", "", 3, { Colours::Yellow_LT });
 	SlowPrint("So deeply, ", 80, 1, RENDER_GREEN);
-	AnimatePrint("me.addLover(\"me\")", "", 3, { ColourCode::Yellow_fg });
+	AnimatePrint("me.addLover(\"me\")", "", 3, { Colours::Yellow_LT });
 #pragma endregion
 
 #pragma region Chrous
@@ -547,7 +548,7 @@ void Lyrics::Execute(AudioManager* audio)
 	AnimatePrint("you.getAffections();", "[World] Apply ", 3);
 
 	SlowPrint("Then I can, then I can be your only S A T I S F A C T I O N", 40, 1, RENDER_GREEN);
-	AnimatePrint("world.removeCharacters(\"all\", \"nonEssential\");", "", 3, { ColourCode::Yellow_fg });
+	AnimatePrint("world.removeCharacters(\"all\", \"nonEssential\");", "", 3, { Colours::Yellow_LT });
 	AnimatePrint("[REDACTED]", "[World] Deleting Character: ", 2);
 	AnimatePrint("[REDACTED]", "[World] Deleting Character: ", 2);
 
@@ -568,23 +569,23 @@ void Lyrics::Execute(AudioManager* audio)
 	SlowPrint("If I'm an eggplant", 80, 1, RENDER_GREEN);
 	PrintFromFile("assets/getEggplant.txt");
 	SlowPrint("Then I will give you my nutrients", 60, 1, RENDER_GREEN);
-	AnimatePrint("if (std::is_same_v<decltype(me), Eggplant>) { you.addAttribute(me.getAttribute(\"nutrients\")); }", "", 2);
+	AnimatePrint("if (std::is_same_v<decltype(me), Eggplant>) { you.addAttribute(me.getAttribute(\"nutrients\")); }", "", 2, { Colours::Yellow_LT });
 
 	SlowPrint("If I'm a tomato", 75, 1, RENDER_GREEN);
 	PrintFromFile("assets/getTomato.txt");
 	SlowPrint("Then I will give you my antioxidants", 60, 1, RENDER_GREEN);
-	AnimatePrint("if (std::is_same_v<decltype(me), Tomato>) { you.addAttributes(me.getAttributes(\"antioxidants\")); }", "", 2);
+	AnimatePrint("if (std::is_same_v<decltype(me), Tomato>) { you.addAttributes(me.getAttributes(\"antioxidants\")); }", "", 2, { Colours::Yellow_LT });
 
 	SlowPrint("If I'm a tabby cat", 85, 1, RENDER_GREEN);
 	PrintFromFile("assets/getCat.txt");
 	SlowPrint("Then I will give purr for your enjoyment", 40, 1, RENDER_GREEN);
-	AnimatePrint("if (std::is_same_v<decltype(me), Cat>) { you.addAttribute(me.getLanguage(\"meow\")); }", "", 2);
+	AnimatePrint("if (std::is_same_v<decltype(me), Cat>) { you.addAttribute(me.getLanguage(\"meow\")); }", "", 2, { Colours::Yellow_LT });
 
 	SlowPrint("If I'm the only ", 40, 0, RENDER_GREEN);
 	SlowPrint("GOD", 40, 1, RENDER_RED);
 	for (int i = 0; i < 3; ++i) AnimatePrint("[REDACTED] as Owner", "[World] Set player ", 2);
 	SlowPrint("Then you're the proof of my ", 60, 0, RENDER_GREEN);
-	AnimatePrint("E X I S T A N C E ", "[World] Set player ", 3, RENDER_RED, RENDER_GREEN);
+	AnimatePrint("E X I S T A N C E ", "[Console] Then you're the proof of my ", 3, RENDER_RED, RENDER_GREEN);
 #pragma endregion
 
 #pragma region Pre_Chorus
@@ -602,8 +603,8 @@ void Lyrics::Execute(AudioManager* audio)
 	AnimatePrint(FormatTime(), "[World] Updating Time: ", 5);
 
 	SlowPrint("Oh, switch my role to ", 95, 0, RENDER_GREEN);
-	SlowPrint("S to M", 95, 1, RENDER_RED);
-	SlowPrint("me.toggleLoveable();", 55, 1, { ColourCode::Yellow_fg });
+	SlowPrint("S to M", 95, 0, RENDER_RED);
+	SlowPrint("\nme.toggleLoveable();", 55, 1, { Colours::Yellow_LT });
 
 	SlowPrint("So we can enter the ...", 80, 1, RENDER_GREEN);
 	ScrambleTextWall(2, 1500, {
@@ -613,7 +614,7 @@ void Lyrics::Execute(AudioManager* audio)
 		"the Tran%&^*(",
 		"Y#3 Yi@mk3*:$9<",
 		"      The Trance"
-		}, { ColourCode::Cyan_fg });
+		}, { Colours::Cyan_LT });
 #pragma endregion
 
 #pragma region Chorus
@@ -748,8 +749,8 @@ void Lyrics::Execute(AudioManager* audio)
 #ifdef _DEBUG
 	if (isSectionSkipped)
 	{
-		std::cout << Renderer{ ColourCode::Cyan_fg }("\nSkipped saving song positions.");
-		std::cout << Renderer{ ColourCode::Cyan_fg }("\nSkipped saving used assets.");
+		std::cout << Renderer{ Colours::Cyan_LT }("\nSkipped saving song positions.");
+		std::cout << Renderer{ Colours::Cyan_LT }("\nSkipped saving used assets.");
 		return;
 	}
 
