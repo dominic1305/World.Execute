@@ -79,8 +79,8 @@ namespace Colours // Colour presets from "https://en.wikipedia.org/wiki/ANSI_esc
 
 struct Colour
 {
-	rgb						fg		= Colours::White_LT;
-	rgb						bg		= Colours::Black;
+	rgb						fg			= Colours::White_LT;
+	rgb						bg			= Colours::Black;
 	bool					underline	= false;
 
 	std::string				operator()() const;
