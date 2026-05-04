@@ -214,18 +214,20 @@ void Lyrics::PrintFromFile(const std::string& filename, Renderer renderer)
 	file.close();
 }
 
-void Lyrics::SlowPrint(const std::string& str, unsigned int delay_ms, unsigned int newLines, Renderer renderer)
+void Lyrics::SlowPrint(const std::string& str, const std::string& rootname, Time delay_ms, unsigned int newLines, Renderer renderer)
 {
+	unsigned int delay = delay_ms(str.size());
+
 	if (atLineStart)
 	{
-		std::cout << renderer("[Console] ");
+		std::cout << renderer(rootname + " ");
 		atLineStart = false;
 	}
 
 	for (char c : str)
 	{
 		std::cout << renderer(std::string(1, c)) << std::flush;
-		std::this_thread::sleep_for(std::chrono::milliseconds(delay_ms));
+		std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 	}
 
 	for (unsigned int i = 0U; i < newLines; ++i)
@@ -233,6 +235,11 @@ void Lyrics::SlowPrint(const std::string& str, unsigned int delay_ms, unsigned i
 		std::cout << std::endl;
 		atLineStart = true;
 	}
+}
+
+void Lyrics::SlowPrint(const std::string& str, Time delay_ms, unsigned int newLines, Renderer renderer)
+{
+	SlowPrint(str, "[Console]", delay_ms, newLines, renderer);
 }
 
 void Lyrics::AnimatePrint(const std::string& actor, const std::string& str, unsigned int loops, Renderer actorRenderer, Renderer strRenderer)
@@ -249,13 +256,15 @@ void Lyrics::AnimatePrint(const std::string& actor, const std::string& str, unsi
 	atLineStart = true;
 }
 
-void Lyrics::SimLoading(const std::string& str, unsigned int delay_ms, unsigned int barLength, Renderer renderer)
+void Lyrics::SimLoading(const std::string& str, Time delay_ms, unsigned int barLength, Renderer renderer)
 {
+	unsigned int delay = delay_ms(str.size());
+
 	for (unsigned int i = 0U; i <= barLength; i++)
 	{
 		std::string bar = "[" + std::string(i, '#') + std::string(barLength - i, '-') + "]";
 		std::cout << '\r' << renderer(bar + " " + std::to_string(i * 100 / barLength) + "% ") << std::flush;
-		std::this_thread::sleep_for(std::chrono::milliseconds(delay_ms));
+		std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 	}
 
 	std::cout << renderer(str) << std::endl;
@@ -329,16 +338,16 @@ void Lyrics::SimWorld2(Renderer renderer)
 	atLineStart = true;
 }
 
-void Lyrics::ScrambleTextWall(unsigned int loops, unsigned int duration_ms, std::initializer_list<const char*> bank, Renderer renderer)
+void Lyrics::ScrambleTextWall(unsigned int loops, Time duration_ms, std::initializer_list<const char*> bank, Renderer renderer)
 {
-	unsigned int sleepAmount = static_cast<unsigned int>(std::round(duration_ms / loops / bank.size()));
+	unsigned int delay = duration_ms(bank.size()) / loops;
 
 	for (unsigned int i = 0U; i < loops; ++i)
 	{
 		for (int ii = 0; ii < bank.size(); ++ii)
 		{
 			std::cout << renderer(*(bank.begin() + ii)) << '\r' << std::flush;
-			std::this_thread::sleep_for(std::chrono::milliseconds(sleepAmount));
+			std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 		}
 		
 		std::cout << std::endl;
@@ -422,20 +431,20 @@ void Lyrics::Execute(AudioManager* audio)
 	Intro:
 	log_timestamp(SongSection::Intro, audio->GetTime());
 #endif
-	SlowPrint("Switch on the Power Line", 50, 1, RENDER_GREEN);
+	SlowPrint("Switch on the Power Line", 50_del, 1, RENDER_GREEN);
 	PrintFromFile("assets/logoRhine.txt");
-	SlowPrint("Remember to put on -- P R O T E C T I O N", 50, 3, RENDER_GREEN);
+	SlowPrint("Remember to put on -- P R O T E C T I O N", 50_del, 3, RENDER_GREEN);
 
 	std::cout << Renderer{ Colours::Yellow_LT }(">EncryptEnigma();\n");
-	SimLoading("Encryption Set\n", 20, 10);
+	SimLoading("Encryption Set\n", 20_del, 10);
 
-	SlowPrint("Lay down you pieces and let's begin ", 50, 0, RENDER_GREEN);
-	SlowPrint("ObjectCreation();", 50, 1, { Colours::Yellow_LT });
+	SlowPrint("Lay down you pieces and let's begin ", 50_del, 0, RENDER_GREEN);
+	SlowPrint("ObjectCreation();", 50_del, 1, { Colours::Yellow_LT });
 
 	AnimatePrint("[Console] Fill in my data.", "", 5, RENDER_GREEN);
 	PrintFromFile("assets/createObject.txt");
-	SlowPrint("Parameters. ", 70, 1, RENDER_GREEN);
-	ScrambleTextWall(3, 600, {
+	SlowPrint("Parameters. ", 70_del, 1, RENDER_GREEN);
+	ScrambleTextWall(3, 600_dur, {
 		"bVJijcss",
 		"ijcssjzpTjH9no@K-emz",
 		"1+Rza-<cT+G\"sC6IhJci!b ",
@@ -443,18 +452,18 @@ void Lyrics::Execute(AudioManager* audio)
 		"9no@K-emz",
 		"56.23.15  >> Rotors ON "
 		});
-	SlowPrint("Initialisation.", 60, 1, RENDER_GREEN);
+	SlowPrint("Initialisation.", 60_del, 1, RENDER_GREEN);
 	PrintFromFile("assets/getError.txt", RENDER_RED);
 	AnimatePrint("world.toggleValidity(false)", "", 3, { Colours::Yellow_LT });
 	AnimatePrint("world.toggleTelementary(false)", "", 3, { Colours::Yellow_LT });
-	SimLoading("Apply World Settings", 10, 10);
+	SimLoading("Apply World Settings", 10_del, 10);
 
-	SlowPrint("Setup our new world", 40, 1, RENDER_GREEN);
+	SlowPrint("Setup our new world", 40_del, 1, RENDER_GREEN);
 	AnimatePrint("World world = new World(5);", "", 1, { Colours::Yellow_LT });
 	AnimatePrint("world.addThing(me);", "", 1, { Colours::Yellow_LT });
 	AnimatePrint("world.addThing(you);", "", 1, { Colours::Yellow_LT });
-	SlowPrint("Let's begin...", 30, 1, RENDER_GREEN);
-	SlowPrint("T H E  S I M U L A T I O N   ", 45, 1, RENDER_GREEN);
+	SlowPrint("Let's begin...", 30_del, 1, RENDER_GREEN);
+	SlowPrint("T H E  S I M U L A T I O N   ", 45_del, 1, RENDER_GREEN);
 	ClearTerminal();
 	AnimatePrint("world.ActivateSimulation();", "", 5, { Colours::Yellow_LT });
 	SimWorld();
@@ -469,24 +478,24 @@ void Lyrics::Execute(AudioManager* audio)
 #endif
 	PrintFromFile("assets/newWorldSettings.txt");
 
-	SlowPrint("If I'm a set of points.", 50, 1, RENDER_GREEN);
-	SlowPrint("Then I will give you my dimensions", 45, 0, RENDER_GREEN);
+	SlowPrint("If I'm a set of points.", 50_del, 1, RENDER_GREEN);
+	SlowPrint("Then I will give you my dimensions", 45_del, 0, RENDER_GREEN);
 	AnimatePrint("getDimensions();", "[Console] Then I will give you my ", 5, RENDER_HIGHLIGHT, RENDER_GREEN);
 	PrintFromFile("assets/getDimension.txt");
 
-	SlowPrint("If I'm a circle.", 70, 1, RENDER_GREEN);
-	SlowPrint("Then I will give you my circumference.", 45, 0, RENDER_GREEN);
+	SlowPrint("If I'm a circle.", 70_del, 1, RENDER_GREEN);
+	SlowPrint("Then I will give you my circumference.", 45_del, 0, RENDER_GREEN);
 	AnimatePrint("getCircumference();", "[Console] Then I will give you my ", 5, RENDER_HIGHLIGHT, RENDER_GREEN);
 	PrintFromFile("assets/getCircumference.txt");
 
-	SlowPrint("If I'm a sineWave.", 50, 1, RENDER_GREEN);
-	SlowPrint("Then you can sit on all my tangents", 50, 0, RENDER_GREEN);
+	SlowPrint("If I'm a sineWave.", 50_del, 1, RENDER_GREEN);
+	SlowPrint("Then you can sit on all my tangents", 50_del, 0, RENDER_GREEN);
 	AnimatePrint("getTangets();", "[Console] Then you can sit on all my ", 5, RENDER_HIGHLIGHT, RENDER_GREEN);
 	PrintFromFile("assets/getTangent.txt");
 
-	SlowPrint("If I approach infinity", 70, 1, RENDER_GREEN);
+	SlowPrint("If I approach infinity", 70_del, 1, RENDER_GREEN);
 	AnimatePrint("[Console] Then you can be my limitations", "", 10, RENDER_GREEN);
-	ScrambleTextWall(1, 600, {
+	ScrambleTextWall(1, 600_dur, {
 		" 22145432389",
 		"    32312421424242",
 		"     4124143545433",
@@ -501,9 +510,9 @@ void Lyrics::Execute(AudioManager* audio)
 	PreChorus1:
 	log_timestamp(SongSection::PreChorus1, audio->GetTime());
 #endif
-	SlowPrint("Switch my Currrent", 80, 1, RENDER_GREEN);
+	SlowPrint("Switch my Currrent", 80_del, 1, RENDER_GREEN);
 	PrintFromFile("assets/AC2DC.txt");
-	ScrambleTextWall(1, 600, {
+	ScrambleTextWall(1, 600_dur, {
 		"DC ---> AC",
 		"Conve",
 		"Converting..."
@@ -512,27 +521,27 @@ void Lyrics::Execute(AudioManager* audio)
 		"               Converted AC to DC               "
 		});
 
-	SlowPrint("And then blind my Vision", 70, 1, RENDER_GREEN);
-	SlowPrint("So dizzy,", 120, 1, RENDER_GREEN);
+	SlowPrint("And then blind my Vision", 70_del, 1, RENDER_GREEN);
+	SlowPrint("So dizzy,", 120_del, 1, RENDER_GREEN);
 	AnimatePrint("WARNING: Setting me.toggleVision() OFF will -----", "", 5, { Colours::Yellow_LT });
 	AnimatePrint("WARNING: Setting me.toggleVision() OFF will -----", "", 5, { Colours::Yellow_LT });
-	SlowPrint("So dizzy,", 120, 1, RENDER_GREEN);
+	SlowPrint("So dizzy,", 120_del, 1, RENDER_GREEN);
 	AnimatePrint("world.disableWarnings()", "", 5, { Colours::Yellow_LT });
 
-	SlowPrint("Oh, we can travel to ... ", 80, 1, RENDER_GREEN);
-	SlowPrint("AD to BC", 120, 1, RENDER_GREEN);
+	SlowPrint("Oh, we can travel to ... ", 80_del, 1, RENDER_GREEN);
+	SlowPrint("AD to BC", 120_del, 1, RENDER_GREEN);
 	AnimatePrint("Year 2332 BC", "[World] Setting Date to: ", 5);
-	ScrambleTextWall(1, 300, {
+	ScrambleTextWall(1, 300_dur, {
 		std::string(std::string("[World] Setting Locations:") + GetBlocks(12)).c_str(),
 		std::string(std::string("[World]: Setting Locations: BABY") + GetBlocks(12)).c_str(),
 		"[World]: Setting Locations: BABYLON, Year: 2332 B.C"
 		});
 
-	SlowPrint("And we can unite", 70, 1, RENDER_GREEN);
+	SlowPrint("And we can unite", 70_del, 1, RENDER_GREEN);
 	PrintFromFile("assets/getDeeply.txt");
-	SlowPrint("So deeply, ", 80, 1, RENDER_GREEN);
+	SlowPrint("So deeply, ", 80_del, 1, RENDER_GREEN);
 	AnimatePrint("me.addLover(\"you\")", "", 3, { Colours::Yellow_LT });
-	SlowPrint("So deeply, ", 80, 1, RENDER_GREEN);
+	SlowPrint("So deeply, ", 80_del, 1, RENDER_GREEN);
 	AnimatePrint("me.addLover(\"me\")", "", 3, { Colours::Yellow_LT });
 #pragma endregion
 
@@ -541,24 +550,24 @@ void Lyrics::Execute(AudioManager* audio)
 	Chorus1:
 	log_timestamp(SongSection::Chorus1, audio->GetTime());
 #endif
-	SlowPrint("If I can", 110, 1, RENDER_GREEN);
-	SlowPrint("If I can", 110, 1, RENDER_GREEN);
-	SlowPrint("Give you all the", 60, 1, RENDER_GREEN);
-	SlowPrint("S T I M U L A T I O N S", 60, 1, RENDER_GREEN);
+	SlowPrint("If I can", 110_del, 1, RENDER_GREEN);
+	SlowPrint("If I can", 110_del, 1, RENDER_GREEN);
+	SlowPrint("Give you all the", 60_del, 1, RENDER_GREEN);
+	SlowPrint("S T I M U L A T I O N S", 60_del, 1, RENDER_GREEN);
 	AnimatePrint("you.getAffections();", "[World] Apply ", 3);
 
-	SlowPrint("Then I can, then I can be your only S A T I S F A C T I O N", 40, 1, RENDER_GREEN);
+	SlowPrint("Then I can, then I can be your only S A T I S F A C T I O N", 40_del, 1, RENDER_GREEN);
 	AnimatePrint("world.removeCharacters(\"all\", \"nonEssential\");", "", 3, { Colours::Yellow_LT });
 	AnimatePrint("[REDACTED]", "[World] Deleting Character: ", 2);
 	AnimatePrint("[REDACTED]", "[World] Deleting Character: ", 2);
 
-	SlowPrint("If I can make you happy,", 50, 1, RENDER_GREEN);
-	SlowPrint("I will run the ", 50, 0,  RENDER_GREEN);
-	SlowPrint("world.execution();", 50, 1, RENDER_RED);
+	SlowPrint("If I can make you happy,", 50_del, 1, RENDER_GREEN);
+	SlowPrint("I will run the ", 50_del, 0,  RENDER_GREEN);
+	SlowPrint("world.execution();", 50_del, 1, RENDER_RED);
 	AnimatePrint("Simulation already active", "[World] ", 2);
 	PrintFromFile("assets/newWorldSettings.txt");
 
-	SlowPrint("Though we are trapped in this STRANGE, strange simulation", 50, 1, RENDER_GREEN);
+	SlowPrint("Though we are trapped in this STRANGE, strange simulation", 50_del, 1, RENDER_GREEN);
 #pragma endregion
 
 #pragma region Second_Verse
@@ -566,25 +575,25 @@ void Lyrics::Execute(AudioManager* audio)
 	Verse2:
 	log_timestamp(SongSection::Verse2, audio->GetTime());
 #endif
-	SlowPrint("If I'm an eggplant", 80, 1, RENDER_GREEN);
+	SlowPrint("If I'm an eggplant", 80_del, 1, RENDER_GREEN);
 	PrintFromFile("assets/getEggplant.txt");
-	SlowPrint("Then I will give you my nutrients", 60, 1, RENDER_GREEN);
+	SlowPrint("Then I will give you my nutrients", 60_del, 1, RENDER_GREEN);
 	AnimatePrint("if (std::is_same_v<decltype(me), Eggplant>) { you.addAttribute(me.getAttribute(\"nutrients\")); }", "", 2, { Colours::Yellow_LT });
 
-	SlowPrint("If I'm a tomato", 75, 1, RENDER_GREEN);
+	SlowPrint("If I'm a tomato", 75_del, 1, RENDER_GREEN);
 	PrintFromFile("assets/getTomato.txt");
-	SlowPrint("Then I will give you my antioxidants", 60, 1, RENDER_GREEN);
+	SlowPrint("Then I will give you my antioxidants", 60_del, 1, RENDER_GREEN);
 	AnimatePrint("if (std::is_same_v<decltype(me), Tomato>) { you.addAttributes(me.getAttributes(\"antioxidants\")); }", "", 2, { Colours::Yellow_LT });
 
-	SlowPrint("If I'm a tabby cat", 85, 1, RENDER_GREEN);
+	SlowPrint("If I'm a tabby cat", 85_del, 1, RENDER_GREEN);
 	PrintFromFile("assets/getCat.txt");
-	SlowPrint("Then I will give purr for your enjoyment", 40, 1, RENDER_GREEN);
+	SlowPrint("Then I will give purr for your enjoyment", 40_del, 1, RENDER_GREEN);
 	AnimatePrint("if (std::is_same_v<decltype(me), Cat>) { you.addAttribute(me.getLanguage(\"meow\")); }", "", 2, { Colours::Yellow_LT });
 
-	SlowPrint("If I'm the only ", 40, 0, RENDER_GREEN);
-	SlowPrint("GOD", 40, 1, RENDER_RED);
+	SlowPrint("If I'm the only ", 40_del, 0, RENDER_GREEN);
+	SlowPrint("GOD", 40_del, 1, RENDER_RED);
 	for (int i = 0; i < 3; ++i) AnimatePrint("[REDACTED] as Owner", "[World] Set player ", 2);
-	SlowPrint("Then you're the proof of my ", 60, 0, RENDER_GREEN);
+	SlowPrint("Then you're the proof of my ", 60_del, 0, RENDER_GREEN);
 	AnimatePrint("E X I S T A N C E ", "[Console] Then you're the proof of my ", 3, RENDER_RED, RENDER_GREEN);
 #pragma endregion
 
@@ -593,21 +602,21 @@ void Lyrics::Execute(AudioManager* audio)
 	PreChorus2:
 	log_timestamp(SongSection::PreChorus2, audio->GetTime());
 #endif
-	SlowPrint("Switch my gender to ", 90, 0, RENDER_GREEN);
-	SlowPrint("F to M", 90, 1, RENDER_RED);
+	SlowPrint("Switch my gender to ", 90_del, 0, RENDER_GREEN);
+	SlowPrint("F to M", 90_del, 1, RENDER_RED);
 	AnimatePrint("Male", "[World] Set player's gender: ", 3);
 
-	SlowPrint("And then do whatever from ", 90, 0, RENDER_GREEN);
-	SlowPrint("AM to PM", 90, 1, RENDER_RED);
+	SlowPrint("And then do whatever from ", 90_del, 0, RENDER_GREEN);
+	SlowPrint("AM to PM", 90_del, 1, RENDER_RED);
 	AnimatePrint("UTC + 10", "[World] Changing Timezone: ", 5);
 	AnimatePrint(FormatTime(), "[World] Updating Time: ", 5);
 
-	SlowPrint("Oh, switch my role to ", 95, 0, RENDER_GREEN);
-	SlowPrint("S to M", 95, 0, RENDER_RED);
-	SlowPrint("\nme.toggleLoveable();", 55, 1, { Colours::Yellow_LT });
+	SlowPrint("Oh, switch my role to ", 95_del, 0, RENDER_GREEN);
+	SlowPrint("S to M", 95_del, 0, RENDER_RED);
+	SlowPrint("\nme.toggleLoveable();", 55_del, 1, { Colours::Yellow_LT });
 
-	SlowPrint("So we can enter the ...", 80, 1, RENDER_GREEN);
-	ScrambleTextWall(2, 1500, {
+	SlowPrint("So we can enter the ...", 80_del, 1, RENDER_GREEN);
+	ScrambleTextWall(2, 1500_dur, {
 		"th",
 		"the T",
 		"the Tra",
@@ -622,20 +631,20 @@ void Lyrics::Execute(AudioManager* audio)
 	Chorus2:
 	log_timestamp(SongSection::Chorus2, audio->GetTime());
 #endif
-	SlowPrint("If I can,", 80, 1, RENDER_GREEN);
-	SlowPrint("If I can, feel your vibrations", 80, 1, RENDER_GREEN);
+	SlowPrint("If I can,", 80_del, 1, RENDER_GREEN);
+	SlowPrint("If I can, feel your vibrations", 80_del, 1, RENDER_GREEN);
 	PrintFromFile("assets/getVibration.txt");
 
-	SlowPrint("Then I can,", 70, 1, RENDER_GREEN);
-	SlowPrint("Then I can finally be completion", 70, 1, RENDER_GREEN);
-	SimLoading("C O M P L E T I O N", 20, 10);
+	SlowPrint("Then I can,", 70_del, 1, RENDER_GREEN);
+	SlowPrint("Then I can finally be completion", 70_del, 1, RENDER_GREEN);
+	SimLoading("C O M P L E T I O N", 20_del, 10);
 
 	ClearTerminal();
-	SlowPrint("Though you have left,", 70, 1, RENDER_GREEN);
-	SlowPrint("Though you have left,", 70, 1, RENDER_GREEN);
+	SlowPrint("Though you have left,", 70_del, 1, RENDER_GREEN);
+	SlowPrint("Though you have left,", 70_del, 1, RENDER_GREEN);
 	for (int i = 0; i < 3; ++i) AnimatePrint("THOUGH YOU HAVE LEFT", "[Console] ", 10, RENDER_RED, RENDER_RED);
 
-	SlowPrint("You have left me in isolation", 73, 1, RENDER_GREEN);
+	SlowPrint("You have left me in isolation", 73_del, 1, RENDER_GREEN);
 #pragma endregion
 
 #pragma region Post_Chorus
@@ -643,21 +652,21 @@ void Lyrics::Execute(AudioManager* audio)
 	PostChorus:
 	log_timestamp(SongSection::PostChorus, audio->GetTime());
 #endif
-	SlowPrint("If I can,", 80, 1, RENDER_GREEN);
-	SlowPrint("If I can erase all the pointless fragments", 75, 1, RENDER_GREEN);
+	SlowPrint("If I can,", 80_del, 1, RENDER_GREEN);
+	SlowPrint("If I can erase all the pointless fragments", 75_del, 1, RENDER_GREEN);
 
-	SlowPrint("Then maybe,", 80, 1, RENDER_GREEN);
-	SlowPrint("Then maybe, you won't leave me so disheartened", 55, 1, RENDER_GREEN);
+	SlowPrint("Then maybe,", 80_del, 1, RENDER_GREEN);
+	SlowPrint("Then maybe, you won't leave me so disheartened", 55_del, 1, RENDER_GREEN);
 
-	SlowPrint("Challenging your ", 100, 0, RENDER_GREEN);
-	SlowPrint("God", 100, 1, RENDER_RED);
+	SlowPrint("Challenging your ", 100_del, 0, RENDER_GREEN);
+	SlowPrint("God", 100_del, 1, RENDER_RED);
 	AnimatePrint("$@$%)#()#*)#*^^#(", "[Console] ", 9, RENDER_RED, RENDER_RED);
 
-	SlowPrint("You have made some ILLEGAL ARGUMENTS *", 94, 1, RENDER_RED);
-	SlowPrint("(*&(%#)()_%(# some ILLEGAL ARGUMENTS *", 92, 1, RENDER_RED);
-	SlowPrint("You ha40)(*$)_@%@$ ILLEGAL ARGUMENTS *", 92, 1, RENDER_RED);
-	SlowPrint("You have 78^*&(*)*$#LLEGAL ARGUMENTS *", 92, 1, RENDER_RED);
-	SlowPrint("You have made some ILLEGAL ARGUMENTS *", 92, 1, RENDER_RED);
+	SlowPrint("You have made some ILLEGAL ARGUMENTS *", 94_del, 1, RENDER_RED);
+	SlowPrint("(*&(%#)()_%(# some ILLEGAL ARGUMENTS *", 92_del, 1, RENDER_RED);
+	SlowPrint("You ha40)(*$)_@%@$ ILLEGAL ARGUMENTS *", 92_del, 1, RENDER_RED);
+	SlowPrint("You have 78^*&(*)*$#LLEGAL ARGUMENTS *", 92_del, 1, RENDER_RED);
+	SlowPrint("You have made some ILLEGAL ARGUMENTS *", 92_del, 1, RENDER_RED);
 
 	PrintFromFile("assets/newWorldSettings.txt");
 	PrintFromFile("assets/getError.txt");
@@ -670,34 +679,34 @@ void Lyrics::Execute(AudioManager* audio)
 	log_timestamp(SongSection::Bridge, audio->GetTime());
 #endif
 	ClearTerminal();
-	for (int i = 0; i < 12; ++i) SlowPrint("EXECUTION", 93, 1, RENDER_RED);
+	for (int i = 0; i < 12; ++i) SlowPrint("EXECUTION", 93_del, 1, RENDER_RED);
 	ClearTerminal();
 
-	SlowPrint("world.translate('1', \"de\");", 13, 0, RENDER_RED);
+	SlowPrint("world.translate('1', \"de\");", 13_del, 0, RENDER_RED);
 	std::cout << RENDER_RED("\r[Console] Ein                        \n");
 	atLineStart = true;
 
-	SlowPrint("world.translate('2', \"es\");", 13, 0, RENDER_RED);
+	SlowPrint("world.translate('2', \"es\");", 13_del, 0, RENDER_RED);
 	std::cout << RENDER_RED("\r[Console] Dos                        \n");
 	atLineStart = true;
 
-	SlowPrint("world.translate('3', \"fr\");", 13, 0, RENDER_RED);
+	SlowPrint("world.translate('3', \"fr\");", 13_del, 0, RENDER_RED);
 	std::cout << RENDER_RED("\r[Console] Trois                      \n");
 	atLineStart = true;
 
-	SlowPrint("world.translate('4', \"ko\");", 13, 0, RENDER_RED);
+	SlowPrint("world.translate('4', \"ko\");", 13_del, 0, RENDER_RED);
 	std::cout << RENDER_RED("\r[Console] Ne                         \n");
 	atLineStart = true;
 
-	SlowPrint("world.translate('5', \"sv\");", 13, 0, RENDER_RED);
+	SlowPrint("world.translate('5', \"sv\");", 13_del, 0, RENDER_RED);
 	std::cout << RENDER_RED("\r[Console] Fem                        \n");
 	atLineStart = true;
 
-	SlowPrint("world.translate('6', \"zh\");", 13, 0, RENDER_RED);
+	SlowPrint("world.translate('6', \"zh\");", 13_del, 0, RENDER_RED);
 	std::cout << RENDER_RED("\r[Console] Liu                        \n");
 	atLineStart = true;
 
-	SlowPrint("EXECUTION!", 70, 1, RENDER_RED);
+	SlowPrint("EXECUTION!", 70_del, 1, RENDER_RED);
 
 	PrintFromFile("assets/getError.txt", RENDER_RED);
 	PrintFromFile("assets/getError2.txt", RENDER_RED);
@@ -709,12 +718,12 @@ void Lyrics::Execute(AudioManager* audio)
 	log_timestamp(SongSection::Chorus3, audio->GetTime());
 #endif
 	ClearTerminal();
-	SlowPrint("If I can, if I can give them all the EXECUTION", 70, 1, RENDER_RED);
-	SlowPrint("Then I can, then I can be your only EXECUTION", 70, 1, RENDER_RED);
-	SlowPrint("If I can have you back, I will run the EXECUTION", 70, 1, RENDER_RED);
+	SlowPrint("If I can, if I can give them all the EXECUTION", 70_del, 1, RENDER_RED);
+	SlowPrint("Then I can, then I can be your only EXECUTION", 70_del, 1, RENDER_RED);
+	SlowPrint("If I can have you back, I will run the EXECUTION", 70_del, 1, RENDER_RED);
 
 	PrintFromFile("assets/getError2.txt");;
-	SlowPrint("Though we are trapped, we are trapped, ah ah ah ah", 60, 1, RENDER_RED);
+	SlowPrint("Though we are trapped, we are trapped, ah ah ah ah", 60_del, 1, RENDER_RED);
 #pragma endregion
 
 #pragma region Fourth_Chrous_Refrain
@@ -723,13 +732,13 @@ void Lyrics::Execute(AudioManager* audio)
 	log_timestamp(SongSection::Chorus4, audio->GetTime());
 #endif
 	ClearTerminal();
-	SlowPrint("I've studied, I've studied how to properly l-o-ove", 75, 1, RENDER_RED);
-	SlowPrint("Question me, question me I can answer all l-o-ove", 70, 1, RENDER_RED);;
+	SlowPrint("I've studied, I've studied how to properly l-o-ove", 75_del, 1, RENDER_RED);
+	SlowPrint("Question me, question me I can answer all l-o-ove", 70_del, 1, RENDER_RED);;
 	PrintFromFile("assets/getError2.txt");
 	ClearTerminal();
 
-	SlowPrint("I know the algebraic expression of l-o-ove", 65, 1, RENDER_RED);
-	SlowPrint("Though you are free, I am trapped, trapped in l-o-o-ove", 60, 1, RENDER_RED);
+	SlowPrint("I know the algebraic expression of l-o-ove", 65_del, 1, RENDER_RED);
+	SlowPrint("Though you are free, I am trapped, trapped in l-o-o-ove", 60_del, 1, RENDER_RED);
 
 	SimWorld2();
 	PrintFromFile("assets/getError2.txt");
@@ -741,7 +750,7 @@ void Lyrics::Execute(AudioManager* audio)
 	log_timestamp(SongSection::Outro, audio->GetTime());
 #endif
 	ClearTerminal();
-	SlowPrint("EXECUTION", 70, 1, RENDER_RED);
+	SlowPrint("EXECUTION", 70_del, 1, RENDER_RED);
 
 	for (int i = 0; i < 4; ++i) PrintFromFile("assets/getError2.txt");
 #pragma endregion
