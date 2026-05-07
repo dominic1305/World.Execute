@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "../lib/miniaudio.h"
+#include "../lib/miniaudio/miniaudio.h"
 
 class AudioManager
 {

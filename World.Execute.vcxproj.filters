@@ -21,7 +21,7 @@
     <ClCompile Include="src\audio_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="lib\miniaudio.c">
+    <ClCompile Include="lib\miniaudio\miniaudio.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\lyric_controller.cpp">
@@ -35,7 +35,7 @@
     <ClInclude Include="src\audio_manager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="lib\miniaudio.h">
+    <ClInclude Include="lib\miniaudio\miniaudio.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\lyric_controller.hpp">

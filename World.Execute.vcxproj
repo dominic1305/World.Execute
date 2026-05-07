@@ -125,14 +125,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="lib\miniaudio.c" />
+    <ClCompile Include="lib\miniaudio\miniaudio.c" />
     <ClCompile Include="src\audio_manager.cpp" />
     <ClCompile Include="src\colour.cpp" />
     <ClCompile Include="src\lyric_controller.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="lib\miniaudio.h" />
+    <ClInclude Include="lib\miniaudio\miniaudio.h" />
     <ClInclude Include="src\audio_manager.hpp" />
     <ClInclude Include="src\colour.hpp" />
     <ClInclude Include="src\lyric_controller.hpp" />
