@@ -216,7 +216,7 @@ void Lyrics::PrintFromFile(const std::string& filename, Renderer renderer)
 
 void Lyrics::SlowPrint(const std::string& str, const std::string& rootname, Time delay_ms, unsigned int newLines, Renderer renderer)
 {
-	unsigned int delay = delay_ms(str.size());
+	Time::mil delay = delay_ms(str.size());
 
 	if (atLineStart)
 	{
@@ -227,7 +227,7 @@ void Lyrics::SlowPrint(const std::string& str, const std::string& rootname, Time
 	for (char c : str)
 	{
 		std::cout << renderer(std::string(1, c)) << std::flush;
-		std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+		std::this_thread::sleep_for(delay);
 	}
 
 	for (unsigned int i = 0U; i < newLines; ++i)
@@ -258,13 +258,13 @@ void Lyrics::AnimatePrint(const std::string& actor, const std::string& str, unsi
 
 void Lyrics::SimLoading(const std::string& str, Time delay_ms, unsigned int barLength, Renderer renderer)
 {
-	unsigned int delay = delay_ms(str.size());
+	Time::mil delay = delay_ms(str.size());
 
 	for (unsigned int i = 0U; i <= barLength; i++)
 	{
 		std::string bar = "[" + std::string(i, '#') + std::string(barLength - i, '-') + "]";
 		std::cout << '\r' << renderer(bar + " " + std::to_string(i * 100 / barLength) + "% ") << std::flush;
-		std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+		std::this_thread::sleep_for(delay);
 	}
 
 	std::cout << renderer(str) << std::endl;
@@ -340,14 +340,14 @@ void Lyrics::SimWorld2(Renderer renderer)
 
 void Lyrics::ScrambleTextWall(unsigned int loops, Time duration_ms, std::initializer_list<const char*> bank, Renderer renderer)
 {
-	unsigned int delay = duration_ms(bank.size()) / loops;
+	Time::mil delay = duration_ms(bank.size()) / loops;
 
 	for (unsigned int i = 0U; i < loops; ++i)
 	{
 		for (int ii = 0; ii < bank.size(); ++ii)
 		{
 			std::cout << renderer(*(bank.begin() + ii)) << '\r' << std::flush;
-			std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+			std::this_thread::sleep_for(delay);
 		}
 		
 		std::cout << std::endl;

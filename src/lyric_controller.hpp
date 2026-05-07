@@ -7,7 +7,7 @@
 #include "colour.hpp"
 #include "audio_manager.hpp"
 
-struct						_duration
+struct _duration
 {
 	unsigned int			duration;
 };
@@ -17,7 +17,7 @@ constexpr _duration			operator""_dur(uint64_t duration)
 	return { static_cast<unsigned int>(duration) };
 }
 
-struct						_delay
+struct _delay
 {
 	unsigned int			delay;
 };
@@ -27,10 +27,11 @@ constexpr _delay			operator""_del(uint64_t delay)
 	return { static_cast<unsigned int>(delay) };
 }
 
-struct						Time
+struct Time
 {
 	using dur = _duration;
 	using del = _delay;
+	using mil = std::chrono::duration<float, std::milli>;
 
 	std::variant<dur, del>	var;
 
@@ -44,22 +45,20 @@ struct						Time
 	{
 	}
 
-	constexpr unsigned int	operator()(size_t str_length) const
+	constexpr mil			operator()(size_t str_length) const
 	{
 		struct visitor
 		{
-			unsigned int str_length;
+			unsigned int	str_length;
 
-			constexpr unsigned int operator()(dur duration) const
+			constexpr mil	operator()(dur duration) const
 			{
-				float delay = static_cast<float>(duration.duration) / str_length;
-				unsigned int floored = static_cast<unsigned int>(delay);
-				return (delay - floored >= 0.5f) ? floored + 1 : floored;
+				return mil{ static_cast<float>(duration.duration) / str_length };
 			}
 
-			constexpr unsigned int operator()(del delay) const
+			constexpr mil	operator()(del delay) const
 			{
-				return delay.delay;
+				return mil{ delay.delay };
 			}
 		};
 
@@ -97,7 +96,7 @@ extern const Renderer	RENDER_GREEN;
 extern const Renderer	RENDER_RED;
 extern const Renderer	RENDER_HIGHLIGHT;
 
-namespace				Lyrics
+namespace Lyrics
 {
 	void				ClearTerminal();
 
