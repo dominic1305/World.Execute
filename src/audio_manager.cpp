@@ -93,9 +93,9 @@ float AudioManager::GetVolume() const
 	return ma_sound_get_volume(&m_sound);
 }
 
-void AudioManager::HangThread()
+void AudioManager::HangThread(std::stop_token stoken)
 {
-	while (!ma_sound_at_end(&m_sound))
+	while (!stoken.stop_requested() && !ma_sound_at_end(&m_sound))
 	{
 		ma_uint64 cursor;
 		ma_sound_get_cursor_in_pcm_frames(&m_sound, &cursor);

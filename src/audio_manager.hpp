@@ -24,7 +24,7 @@ public:
 
 	float					GetVolume() const;
 
-	void					HangThread();
+	void					HangThread(std::stop_token stoken);
 
 private:
 
